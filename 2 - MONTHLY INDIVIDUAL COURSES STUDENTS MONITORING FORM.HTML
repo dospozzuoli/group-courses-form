@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Progress & Risk Alert Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        .header-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .header-fields .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .field-group {
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .radio-group,
+        .checkbox-group {
+            margin: 15px 0;
+        }
+        
+        .radio-option,
+        .checkbox-option {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        
+        .radio-option:hover,
+        .checkbox-option:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        
+        .radio-option input[type="radio"],
+        .checkbox-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .radio-option label,
+        .checkbox-option label {
+            cursor: pointer;
+            font-weight: 400;
+            margin: 0;
+            display: inline;
+        }
+        
+        .skill-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .skill-table th,
+        .skill-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        .skill-table th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .skill-table input[type="number"] {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .skill-table input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .nested-options {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+        
+        .inline-date {
+            display: inline-block;
+            width: 150px;
+            margin: 0 10px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            .button-group {
+                display: none;
+            }
+        }
+        
+        .alert-box {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Monthly Progress & Risk Alert Report</h1>
+        
+        <div class="header-fields">
+            <div class="field-group">
+                <label for="month">Month:</label>
+                <input type="text" id="month" name="month" placeholder="e.g., January 2025">
+            </div>
+            <div class="field-group">
+                <label for="teacher">Teacher:</label>
+                <input type="text" id="teacher" name="teacher">
+            </div>
+            <div class="field-group">
+                <label for="student">Student:</label>
+                <input type="text" id="student" name="student">
+            </div>
+            <div class="field-group">
+                <label for="course">Course/Level:</label>
+                <input type="text" id="course" name="course">
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">1. Overall Progress Status</div>
+            <p style="margin-bottom: 15px; color: #555;">Is this student on track to pass the final exam?</p>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="status-yes" name="progress-status" value="yes">
+                    <label for="status-yes">YES - progressing well (no parent contact needed)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="status-risk" name="progress-status" value="risk">
+                    <label for="status-risk">AT RISK - requires intervention (tutoring recommended, parent notification advised)</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="status-concern" name="progress-status" value="concern">
+                    <label for="status-concern">SERIOUS CONCERN - unlikely to pass without major improvement (parent meeting required)</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">2. Attendance & Commitment</div>
+            <div class="field-group">
+                <label for="attendance">Attendance rate:</label>
+                <input type="text" id="attendance" name="attendance" placeholder="e.g., 85%">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px;">Commitment level:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="commit-excellent" name="commitment" value="excellent">
+                        <label for="commit-excellent">Excellent - comes prepared, does homework, engaged</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="commit-adequate" name="commitment" value="adequate">
+                        <label for="commit-adequate">Adequate - meets minimum requirements</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="commit-problem" name="commitment" value="problem">
+                        <label for="commit-problem">PROBLEM:</label>
+                        <div class="nested-options">
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="prob-attendance" name="problems" value="irregular-attendance">
+                                <label for="prob-attendance">Irregular attendance</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="prob-unprepared" name="problems" value="unprepared">
+                                <label for="prob-unprepared">Unprepared</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="prob-homework" name="problems" value="homework-not-done">
+                                <label for="prob-homework">Homework not done</label>
+                            </div>
+                            <div class="checkbox-option">
+                                <input type="checkbox" id="prob-disengaged" name="problems" value="disengaged">
+                                <label for="prob-disengaged">Disengaged</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">3. Skill Assessment</div>
+            <p style="margin-bottom: 15px; color: #555;">Rate 1-5, where 3 = passing level</p>
+            <table class="skill-table">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Score</th>
+                        <th>Problem Area?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Speaking</td>
+                        <td><input type="number" id="speaking" name="speaking" min="1" max="5" placeholder="1-5"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" id="speaking-problem" name="speaking-problem">
+                            <label for="speaking-problem" style="margin-left: 5px; font-weight: normal;">Below expected level</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Listening</td>
+                        <td><input type="number" id="listening" name="listening" min="1" max="5" placeholder="1-5"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" id="listening-problem" name="listening-problem">
+                            <label for="listening-problem" style="margin-left: 5px; font-weight: normal;">Below expected level</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Reading</td>
+                        <td><input type="number" id="reading" name="reading" min="1" max="5" placeholder="1-5"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" id="reading-problem" name="reading-problem">
+                            <label for="reading-problem" style="margin-left: 5px; font-weight: normal;">Below expected level</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Writing</td>
+                        <td><input type="number" id="writing" name="writing" min="1" max="5" placeholder="1-5"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" id="writing-problem" name="writing-problem">
+                            <label for="writing-problem" style="margin-left: 5px; font-weight: normal;">Below expected level</label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="field-group" style="margin-top: 20px;">
+                <label for="test-scores">Recent test/assessment scores:</label>
+                <textarea id="test-scores" name="test-scores" rows="2"></textarea>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">4. Issue Identification</div>
+            <p style="margin-bottom: 15px; color: #555;">If student is struggling, what is the primary cause? (check all that apply)</p>
+            <div class="checkbox-group">
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-none" name="issues" value="none">
+                    <label for="issue-none">No issues - student is doing well</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-ability" name="issues" value="ability">
+                    <label for="issue-ability">Ability/Aptitude: Struggles to grasp concepts despite effort</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-effort" name="issues" value="effort">
+                    <label for="issue-effort">Effort/Motivation: Capable but not applying themselves</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-attendance" name="issues" value="attendance">
+                    <label for="issue-attendance">Attendance: Missing too many classes to keep up</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-behavior" name="issues" value="behavior">
+                    <label for="issue-behavior">Behavior: Disruptive or unfocused in class</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="issue-external" name="issues" value="external">
+                    <label for="issue-external">External factors (specify):</label>
+                    <textarea id="external-factors" name="external-factors" rows="2" style="margin-top: 10px;"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">5. Action Taken/Recommended</div>
+            <div class="checkbox-group">
+                <div class="checkbox-option">
+                    <input type="checkbox" id="action-none" name="actions" value="none">
+                    <label for="action-none">No action needed - continue monitoring</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="action-tutoring" name="actions" value="tutoring">
+                    <label for="action-tutoring">Tutoring offered</label>
+                    <div class="nested-options">
+                        <label>Date:</label>
+                        <input type="date" class="inline-date" id="tutoring-date" name="tutoring-date">
+                        <div style="margin-top: 10px;">
+                            <input type="radio" id="tutoring-accepted" name="tutoring-status" value="accepted">
+                            <label for="tutoring-accepted" style="margin-right: 15px;">Accepted</label>
+                            
+                            <input type="radio" id="tutoring-declined" name="tutoring-status" value="declined">
+                            <label for="tutoring-declined" style="margin-right: 15px;">Declined</label>
+                            
+                            <input type="radio" id="tutoring-pending" name="tutoring-status" value="pending">
+                            <label for="tutoring-pending">Pending</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="action-parent" name="actions" value="parent-contacted">
+                    <label for="action-parent">Parent contacted</label>
+                    <div class="nested-options">
+                        <label>Date:</label>
+                        <input type="date" class="inline-date" id="parent-date" name="parent-date">
+                        <div style="margin-top: 10px;">
+                            <label style="display: inline; margin-right: 10px;">Method:</label>
+                            <input type="checkbox" id="method-email" name="contact-method" value="email">
+                            <label for="method-email" style="margin-right: 15px;">Email</label>
+                            
+                            <input type="checkbox" id="method-phone" name="contact-method" value="phone">
+                            <label for="method-phone" style="margin-right: 15px;">Phone</label>
+                            
+                            <input type="checkbox" id="method-meeting" name="contact-method" value="meeting">
+                            <label for="method-meeting">Meeting</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="action-materials" name="actions" value="materials">
+                    <label for="action-materials">Additional materials provided</label>
+                </div>
+                <div class="checkbox-option">
+                    <input type="checkbox" id="action-recommend" name="actions" value="recommend-meeting">
+                    <label for="action-recommend">Recommend parent meeting this month</label>
+                    <div class="nested-options">
+                        <label for="meeting-reason">Reason:</label>
+                        <textarea id="meeting-reason" name="meeting-reason" rows="2" style="margin-top: 5px;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">6. Teacher Notes</div>
+            <p style="margin-bottom: 15px; color: #555;">Specific concerns or evidence to support assessment (for documentation purposes):</p>
+            <textarea id="teacher-notes" name="teacher-notes" rows="6" placeholder="Enter any additional notes, observations, or documentation here..."></textarea>
+        </div>
+        
+        <div class="alert-box alert-success" id="saveAlert">
+            Success!
+        </div>
+        
+        <div class="button-group">
+            <button type="button" class="btn-success" onclick="saveForm()">💾 Save Data</button>
+            <button type="button" class="btn-success" onclick="document.getElementById('loadFile').click()">📂 Load Data</button>
+            <button type="button" class="btn-primary" onclick="window.print()">Print Form</button>
+            <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+        </div>
+        
+        <input type="file" id="loadFile" accept=".json" style="display: none;" onchange="loadForm(event)">
+    </div>
+    
+    <script>
+        function clearForm() {
+            if (confirm('Are you sure you want to clear all fields?')) {
+                document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(field => {
+                    field.value = '';
+                });
+                document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(field => {
+                    field.checked = false;
+                });
+            }
+        }
+        
+        function saveForm() {
+            const data = collectFormData();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const studentName = data.student || 'student';
+            const monthName = data.month || 'month';
+            link.download = `student-${studentName.replace(/\s+/g, '-')}-${monthName.replace(/\s+/g, '-')}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showAlert('Data saved successfully!');
+        }
+        
+        function loadForm(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    document.getElementById('month').value = data.month || '';
+                    document.getElementById('teacher').value = data.teacher || '';
+                    document.getElementById('student').value = data.student || '';
+                    document.getElementById('course').value = data.course || '';
+                    
+                    if (data.progressStatus) {
+                        const radio = document.querySelector(`input[name="progress-status"][value="${data.progressStatus}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                    
+                    document.getElementById('attendance').value = data.attendance || '';
+                    
+                    if (data.commitment) {
+                        const radio = document.querySelector(`input[name="commitment"][value="${data.commitment}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                    
+                    if (data.problems) {
+                        data.problems.forEach(p => {
+                            const checkbox = document.querySelector(`input[name="problems"][value="${p}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                    
+                    document.getElementById('speaking').value = data.skills.speaking || '';
+                    document.getElementById('listening').value = data.skills.listening || '';
+                    document.getElementById('reading').value = data.skills.reading || '';
+                    document.getElementById('writing').value = data.skills.writing || '';
+                    
+                    document.getElementById('speaking-problem').checked = data.skills.speakingProblem || false;
+                    document.getElementById('listening-problem').checked = data.skills.listeningProblem || false;
+                    document.getElementById('reading-problem').checked = data.skills.readingProblem || false;
+                    document.getElementById('writing-problem').checked = data.skills.writingProblem || false;
+                    
+                    document.getElementById('test-scores').value = data.testScores || '';
+                    
+                    if (data.issues) {
+                        data.issues.forEach(i => {
+                            const checkbox = document.querySelector(`input[name="issues"][value="${i}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                    
+                    document.getElementById('external-factors').value = data.externalFactors || '';
+                    
+                    if (data.actions) {
+                        data.actions.forEach(a => {
+                            const checkbox = document.querySelector(`input[name="actions"][value="${a}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                    
+                    document.getElementById('tutoring-date').value = data.tutoringDate || '';
+                    
+                    if (data.tutoringStatus) {
+                        const radio = document.querySelector(`input[name="tutoring-status"][value="${data.tutoringStatus}"]`);
+                        if (radio) radio.checked = true;
+                    }
+                    
+                    document.getElementById('parent-date').value = data.parentDate || '';
+                    
+                    if (data.contactMethods) {
+                        data.contactMethods.forEach(m => {
+                            const checkbox = document.querySelector(`input[name="contact-method"][value="${m}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+                    
+                    document.getElementById('meeting-reason').value = data.meetingReason || '';
+                    document.getElementById('teacher-notes').value = data.teacherNotes || '';
+                    
+                    showAlert('Data loaded successfully!');
+                } catch (error) {
+                    alert('Error loading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        function collectFormData() {
+            const getCheckedValues = (name) => {
+                return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+            };
+            
+            const getRadioValue = (name) => {
+                const el = document.querySelector(`input[name="${name}"]:checked`);
+                return el ? el.value : '';
+            };
+            
+            return {
+                month: document.getElementById('month').value,
+                teacher: document.getElementById('teacher').value,
+                student: document.getElementById('student').value,
+                course: document.getElementById('course').value,
+                progressStatus: getRadioValue('progress-status'),
+                attendance: document.getElementById('attendance').value,
+                commitment: getRadioValue('commitment'),
+                problems: getCheckedValues('problems'),
+                skills: {
+                    speaking: document.getElementById('speaking').value,
+                    listening: document.getElementById('listening').value,
+                    reading: document.getElementById('reading').value,
+                    writing: document.getElementById('writing').value,
+                    speakingProblem: document.getElementById('speaking-problem').checked,
+                    listeningProblem: document.getElementById('listening-problem').checked,
+                    readingProblem: document.getElementById('reading-problem').checked,
+                    writingProblem: document.getElementById('writing-problem').checked
+                },
+                testScores: document.getElementById('test-scores').value,
+                issues: getCheckedValues('issues'),
+                externalFactors: document.getElementById('external-factors').value,
+                actions: getCheckedValues('actions'),
+                tutoringDate: document.getElementById('tutoring-date').value,
+                tutoringStatus: getRadioValue('tutoring-status'),
+                parentDate: document.getElementById('parent-date').value,
+                contactMethods: getCheckedValues('contact-method'),
+                meetingReason: document.getElementById('meeting-reason').value,
+                teacherNotes: document.getElementById('teacher-notes').value,
+                savedDate: new Date().toISOString()
+            };
+        }
+        
+        function showAlert(msg) {
+            const alert = document.getElementById('saveAlert');
+            alert.textContent = msg;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
